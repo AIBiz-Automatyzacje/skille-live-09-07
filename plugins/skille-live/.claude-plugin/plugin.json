@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "skille-live",
+  "displayName": "Skille Live 09.07",
+  "description": "9 gotowych skilli do asystenta w Claude Code: research na YouTube i Reddicie, komunikacja przez Gmail/Kalendarz/Dysk, e-mail z terminala, X/Twitter oraz agent researchu multi-source.",
+  "author": {
+    "name": "AIBIZ Sp. z o.o.",
+    "email": "kontakt@akademiaautomatyzacji.com",
+    "url": "https://akademiaautomatyzacji.com"
+  },
+  "homepage": "https://akademiaautomatyzacji.com",
+  "keywords": ["claude-code", "skills", "research", "youtube", "reddit", "gmail", "x-twitter", "automatyzacja", "asystent-ai"],
+  "license": "UNLICENSED"
+}
