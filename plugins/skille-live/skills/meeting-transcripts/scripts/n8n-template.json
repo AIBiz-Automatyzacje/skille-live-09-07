@@ -1,0 +1,360 @@
+{
+  "name": "Recall - Transkrypcja",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5378bd08-a468-40fa-a68b-005556dacd02",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "9c95abf6-eecd-4427-bada-e17475c14d67",
+      "name": "📥 Recall Webhook",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "url": "=https://us-west-2.recall.ai/api/v1/bot/{{ $json.body.data.bot.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1455623c-bbe0-47f6-b116-64532acf1fc8",
+      "name": "🤖 Pobierz dane bota",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "yrIPzQHRMyeqyBvr",
+          "name": "Recall.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://us-west-2.recall.ai/api/v1/recording/{{ $json.body.data.recording.id }}/create_transcript",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"provider\": {\n      \"recallai_async\": {\n        \"language_code\": \"pl\"\n      }\n    }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        336,
+        1376
+      ],
+      "id": "8db16b4e-e023-4c5e-b6dd-a688966d1377",
+      "name": "🎙️ Utwórz transkrypcję",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "yrIPzQHRMyeqyBvr",
+          "name": "Recall.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.recordings[0].media_shortcuts.transcript.data.download_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "21f045d3-d444-49a1-8d91-10b8c44a9fe4",
+      "name": "📄 Pobierz transkrypt"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allText = $input.all().map(item => {\n  const name = item.json.participant.name;\n  const text = item.json.words.map(w => w.text).join(' ');\n  return `${name}: ${text}`;\n}).join('\\n');\n\nreturn [{ json: { transcript: allText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        0
+      ],
+      "id": "925673a9-b1ed-475f-b236-5f58fdd5925d",
+      "name": "🔧 Złóż transkrypt w tekst"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f69fa85-fb83-4824-84c9-530fabb884a1",
+              "name": "txt",
+              "value": "={{ $json.transcript }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        0
+      ],
+      "id": "45ee494e-a48b-450f-89ea-168937cccce2",
+      "name": "✏️ Ustaw pole transkryptu"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "meeting_transcripts",
+          "mode": "list",
+          "cachedResultName": "meeting_transcripts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "transcript": "={{ $json.txt }}",
+            "created_at": "={{ $now.format('yyyy-MM-dd hh:mm') }}",
+            "recall_bot_id": "={{ $('🤖 Pobierz dane bota').first().json.id }}",
+            "meeting_id": "={{ $('🤖 Pobierz dane bota').first().json.meeting_url.meeting_id }}",
+            "platform": "={{ $('🤖 Pobierz dane bota').first().json.meeting_url.platform }}",
+            "title": "={{ $('🤖 Pobierz dane bota').first().json.recordings[0].media_shortcuts.meeting_metadata.data.title }}",
+            "started_at": "={{ $('🤖 Pobierz dane bota').first().json.recordings[0].created_at.toDateTime() }}",
+            "ended_at": "={{ $('🤖 Pobierz dane bota').first().json.recordings[0].completed_at }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recall_bot_id",
+              "displayName": "recall_bot_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "meeting_id",
+              "displayName": "meeting_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ended_at",
+              "displayName": "ended_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "transcript",
+              "displayName": "transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "493af76c-1cc6-4dd7-a69b-b84816ab71ec",
+      "name": "🐘 Zapisz do PostgreSQL",
+      "credentials": {
+        "postgres": {
+          "id": "eMGSB0u5Y4Nca1X1",
+          "name": "Recall - Transkrypcje"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR_ASSISTANT_WEBHOOK_URL/webhook/REPLACE_ME",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id_spotkania",
+              "value": "={{ $json.meeting_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        0
+      ],
+      "id": "e72a96d5-bf20-43a5-94b8-5aa51b697bdf",
+      "name": "Uruchom asystenta AI"
+    }
+  ],
+  "connections": {
+    "📥 Recall Webhook": {
+      "main": [
+        [
+          {
+            "node": "🤖 Pobierz dane bota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 Pobierz dane bota": {
+      "main": [
+        [
+          {
+            "node": "📄 Pobierz transkrypt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Pobierz transkrypt": {
+      "main": [
+        [
+          {
+            "node": "🔧 Złóż transkrypt w tekst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Złóż transkrypt w tekst": {
+      "main": [
+        [
+          {
+            "node": "✏️ Ustaw pole transkryptu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✏️ Ustaw pole transkryptu": {
+      "main": [
+        [
+          {
+            "node": "🐘 Zapisz do PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🐘 Zapisz do PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Uruchom asystenta AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "jzlR7VsQ4YRSKjq2"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
