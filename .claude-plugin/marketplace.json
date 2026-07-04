@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
   "name": "skille-live-09-07",
-  "description": "Zestaw gotowych skilli Claude Code z live'a Akademii Automatyzacji (09.07.2026): research (YouTube, Reddit), komunikacja (Gmail/Kalendarz/Dysk, e-mail, X), agent researchu multi-source oraz dzienny raport Meta Ads.",
+  "description": "Zestaw gotowych skilli Claude Code z live'a Akademii Automatyzacji (09.07.2026): research (YouTube, Reddit), komunikacja (Gmail/Kalendarz/Dysk, e-mail, X), agent researchu multi-source, dzienny raport Meta Ads oraz radar leadów z grup Facebook.",
   "owner": {
     "name": "AIBIZ Sp. z o.o.",
     "email": "kontakt@akademiaautomatyzacji.com",
@@ -11,7 +11,7 @@
     {
       "name": "skille-live",
       "source": "./plugins/skille-live",
-      "description": "10 gotowych skilli, których Kacper używa na co dzień w swoim asystencie: gog, himalaya, bird, youtube-transcript, yt-search, reddit-search, reddit-post, reddit-news, research-daily, meta-daily."
+      "description": "11 gotowych skilli, których Kacper używa na co dzień w swoim asystencie: gog, himalaya, bird, youtube-transcript, yt-search, reddit-search, reddit-post, reddit-news, research-daily, meta-daily, lead-fb-radar."
     }
   ]
 }

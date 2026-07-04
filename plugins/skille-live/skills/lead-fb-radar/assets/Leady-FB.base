@@ -1,0 +1,42 @@
+filters:
+  and:
+    - result == "lead"
+properties:
+  note.grupa:
+    displayName: Grupa
+  note.data:
+    displayName: Data postu
+  note.status:
+    displayName: Status
+  note.konkurencja:
+    displayName: Konkurencja
+  note.snippet:
+    displayName: Potrzeba
+  note.autor:
+    displayName: Autor
+views:
+  - type: table
+    name: Nowe leady
+    filters:
+      and:
+        - status == "nowy"
+    order:
+      - note.data
+      - note.grupa
+      - note.konkurencja
+      - note.snippet
+      - note.autor
+    sort:
+      - property: note.konkurencja
+        direction: ASC
+  - type: table
+    name: Wszystkie leady
+    order:
+      - note.data
+      - note.grupa
+      - note.status
+      - note.konkurencja
+      - note.snippet
+    sort:
+      - property: note.data
+        direction: DESC

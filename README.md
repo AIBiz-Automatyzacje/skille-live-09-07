@@ -1,10 +1,10 @@
 # Skille Live 09.07 — Akademia Automatyzacji
 
-Zestaw gotowych skilli Claude Code, których używam na co dzień w swoim asystencie. Jeden marketplace, jedna instalacja — i masz wszystkie 10.
+Zestaw gotowych skilli Claude Code, których używam na co dzień w swoim asystencie. Jeden marketplace, jedna instalacja — i masz wszystkie 11.
 
 To te same skille, które pokazuję na live 09.07.2026. Bierzesz, konfigurujesz klucze i działasz.
 
-## Co dostajesz (10 skilli)
+## Co dostajesz (11 skilli)
 
 | Skill | Co robi | Czego potrzebuje |
 |-------|---------|------------------|
@@ -18,6 +18,7 @@ To te same skille, które pokazuję na live 09.07.2026. Bierzesz, konfigurujesz 
 | **reddit-news** | Codzienny skan wybranych subredditów (AI, narzędzia, automatyzacja), filtr po kontekście i upvotes → raport HTML + zadanie. Pod cron. | `APIFY_API_KEY` |
 | **research-daily** | Agent researchu multi-source: równolegle YouTube + Reddit + Perplexity + X, klasyfikacja i destylacja do rosnącej bazy wiedzy. Pod cron lub na żądanie. | `YOUTUBE_API_KEY` + `REDDIT_*` + `PERPLEXITY_API_KEY` (X opcjonalnie). Wymaga też 4 subagentów researchowych — patrz uwaga niżej. |
 | **meta-daily** | Dzienny raport Meta Ads per kreacja: aktywne kampanie (sprzedaż/lead), metryki w oknach czasowych z porównaniem, analiza wizualna grafik i wideo (vision + Gemini, z cache), ocena i sugestie → interaktywny raport HTML. Pod cron. | `ACCESS_TOKEN` + `AD_ACCOUNT_ID` (Meta Marketing API) + `GOOGLE_API_KEY` (Gemini, analiza wideo) — patrz uwaga niżej. |
+| **lead-fb-radar** | Radar zleceń z publicznych grup Facebook: scrapuje świeże posty (bez cookies) wraz z komentarzami, asystent kwalifikuje je pod kątem zapytań o automatyzację/no-code i liczy konkurencję z komentarzy → leady jako notatki w Obsidianie (baza Obsidian Bases) + raport HTML. Pod cron. | `APIFY_API_KEY` — patrz uwaga niżej. |
 
 ## Instalacja
 
@@ -34,7 +35,7 @@ To te same skille, które pokazuję na live 09.07.2026. Bierzesz, konfigurujesz 
    /plugin install skille-live
    ```
 
-To wszystko — masz wszystkie 10 skilli. Część z nich wymaga jeszcze kluczy API lub zewnętrznych CLI (kolumna „Czego potrzebuje").
+To wszystko — masz wszystkie 11 skilli. Część z nich wymaga jeszcze kluczy API lub zewnętrznych CLI (kolumna „Czego potrzebuje").
 
 ## Klucze API
 
@@ -70,6 +71,10 @@ Zewnętrzne CLI:
 Skill jest w pluginie 1:1 tak, jak działa u mnie — a u mnie krok oceny (REASON) opiera rekomendacje o pliki kontekstowe mojego konta (plan mediowy, playbook ocen, config live'ów, benchmarki). U Ciebie tych plików nie będzie: pobieranie danych, metryki per kreacja i raport HTML zadziałają od razu, ale oceny oprą się na ogólnych regułach. Najlepsze efekty dostaniesz, tworząc własne odpowiedniki tych plików pod swoje konto. `MAILER_API` (MailerLite) jest opcjonalny — u mnie służy do pacingu zapisów na live; bez niego pipeline działa dalej.
 
 Wskazówka: Meta udostępniła też oficjalne **Meta Ads AI Connectors** (kwiecień 2026) — serwer MCP (`mcp.facebook.com/ads`) + CLI z logowaniem OAuth, bez zakładania aplikacji deweloperskiej. To alternatywna droga do danych reklamowych wprost z asystenta; meta-daily korzysta z klasycznego Marketing API, bo potrzebuje pełnej kontroli nad oknami atrybucji.
+
+## Uwaga do `lead-fb-radar`
+
+Działa **tylko na grupach publicznych** — aktor `memo23/facebook-public-group-posts-scraper` scrapuje bez cookies, więc do grup prywatnych nie sięgnie (to świadomy kompromis: zero cookies do odświeżania, zero ryzyka bana konta). Grupy do monitorowania ustawiasz w `config/grupy.md`. Kwalifikację postów robi **sam asystent** (bez zewnętrznego API do LLM), a leady lądują jako notatki markdown w `Zasoby/Leady-FB/` — do przeglądania jako baza przez **Obsidian Bases** (dołączony plik `.base`). Koszt Apify: ~$1,5 za 1000 postów (proxy residential). Prompt kwalifikacji jest pod usługi automatyzacji/no-code — dostrój go w `SKILL.md` pod własną ofertę.
 
 ## Uwaga do `research-daily`
 
